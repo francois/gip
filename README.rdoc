@@ -1,0 +1,7 @@
+= gip
+
+Description goes here.
+
+== Copyright
+
+Copyright (c) 2009 François Beausoleil. See LICENSE for details.
