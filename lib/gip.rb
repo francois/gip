@@ -20,9 +20,7 @@ DESC
     name = File.basename(uri.path).sub(File.extname(uri.path), "") unless name
 
     remote = Remote.new(name, repository_url, path)
-    commit = options[:commit]
-    commit = "master" unless commit
-    commit = "#{remote.name}/#{commit}"
+    commit = extract_commit(remote)
     puts "Importing #{remote.url} into #{remote.path} at #{commit}"
 
     create_remote remote.name, remote.url
@@ -44,7 +42,31 @@ DESC
     end
   end
 
+  desc "Freshens the tree at PATH", <<DESC
+Given a previously imported tree at PATH, updates it to the latest HEAD, or whatever --commit specifies.
+
+--commit defaults to 'master', and will always be prefixed with the remote's name.
+DESC
+  method_options :verbose => 0, :commit => :optional
+  def update(path=nil)
+    read_gipinfo.each do |remote|
+      next unless remote.path == path
+      commit = extract_commit(remote)
+      puts "Freshening #{remote.path} from #{remote.url} to #{commit}"
+
+      create_remote remote.name, remote.url
+      git :fetch, remote.name
+      git :merge, "-s", :subtree, "#{remote.name}/#{commit}", :verbose => true
+    end
+  end
+
   private
+  def extract_commit(remote)
+    commit = options[:commit]
+    commit = "master" unless commit
+    commit = "#{remote.name}/#{commit}"
+  end
+
   def create_remote(remote_name, repository_url)
     git :remote, :add, remote_name, repository_url
   rescue CommandError => e
