@@ -1,6 +1,17 @@
-= gip
+= Gip into place: Piston without the SVN cruft
 
-Description goes here.
+This is an implementation of Tom Dysinger's http://dysinger.net/2008/04/29/replacing-braid-or-piston-for-git-with-40-lines-of-rake/ as a full command-line client.  I'm standing on the shoulders of giants...
+
+Gip is a thin layer above git-read-tree.  If you want more information, you can look at http://assets.en.oreilly.com/1/event/24/Smacking%20Git%20Around%20-%20Advanced%20Git%20Tricks%20Presentation.pdf, pages 254-297.
+
+== Usage
+
+  $ gip import git://github.com/mislav/will_paginate.git vendor/plugins/mislav-will_paginate
+	$ gip update vendor/plugins/mislav-will_paginate
+
+Gip stores it's metadata in a .gipinfo file.
+
+Gip automatically commits whenever possible: after import, after update.  If after an update a conflict occurs, the commit will be aborted and you are given the chance to resolve the conflicts.  You have the full power of Git at your disposal.
 
 == Copyright
 
