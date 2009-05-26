@@ -23,13 +23,7 @@ DESC
     commit      = "#{remote_name}/#{commit}"
     puts "Importing #{repository_url} into #{target} at #{commit}"
 
-    begin
-    git :remote, :add, remote_name, repository_url
-    rescue CommandError => e
-      # 128 means remote already exists
-      raise unless e.exitstatus == 128
-    end
-
+    create_remote remote_name, repository_url
     git :fetch, remote_name
     git :"read-tree", "--prefix=#{target}/", "-u", commit
     gipinfo(remote_name => repository_url)
@@ -37,7 +31,25 @@ DESC
     git :commit, "-m", "Vendored #{repository_url} at #{commit}", :verbose => true
   end
 
+  desc "Creates or updates remotes in this repository", <<DESC
+Given the remotes described in a .gipinfo, creates or updates Git remotes in this repository.
+DESC
+  method_options :verbose => 0
+  def remotify
+    read_gipinfo.each do |remote_name, repository_url|
+      create_remote(remote_name, repository_url)
+      git :fetch, remote_name
+    end
+  end
+
   private
+  def create_remote(remote_name, repository_url)
+    git :remote, :add, remote_name, repository_url
+  rescue CommandError => e
+    # 128 means remote already exists
+    raise unless e.exitstatus == 128
+  end
+
   def gipinfo(remotes)
     info = read_gipinfo
     info.merge!(remotes)
