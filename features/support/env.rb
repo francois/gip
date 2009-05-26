@@ -1,6 +1,8 @@
 $LOAD_PATH.unshift(File.dirname(__FILE__) + '/../../lib')
-require 'gip'
+require "gip"
+require "pathname"
+require "fileutils"
 
-require 'test/unit/assertions'
+require "test/unit/assertions"
 
 World(Test::Unit::Assertions)
