@@ -59,7 +59,7 @@ DESC
   def read_gipinfo
     if File.file?(".gipinfo")
       CSV.read(".gipinfo").inject(Hash.new) do |hash, (name,url)|
-        next hash if name =~ /\s*#/
+        next hash if name =~ /^\s*#/
         hash[name] = url
         hash
       end
