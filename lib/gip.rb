@@ -3,30 +3,32 @@ require "uri"
 require "csv"
 
 class Gip < Thor
-  desc  "import REPOSITORY_URL [target]", <<DESC
-Imports the repository at target in the current tree.
+  desc  "import REPOSITORY_URL [path]", <<DESC
+Imports the repository at path in the current tree.
 
-If target is absent, the repository's base name will be used.
+If path is absent, the repository's base name will be used.
 --remote specifies the name of the remote. If unspecified, the repository's base name will be used.
 --commit specifies which commit to import.  If unspecified, 'REMOTE/master' will be used.  You can use any <tree-ish> that Git will recognize (SHA-1, branch name, tag name).  The remote's name will always be prefixed to this value.
 
 In all cases, a .gipinfo file will be created/updated with the correct remotes specified.  The .gipinfo file is a CSV file with 2 columns: remote name,repository URL.
 DESC
   method_options :commit => :optional, :remote => :optional, :verbose => 0
-  def import(repository_url, target=nil)
-    uri         = URI.parse(repository_url)
-    target      = File.basename(uri.path).sub(File.extname(uri.path), "") unless target
-    remote_name = options[:remote]
-    remote_name = File.basename(uri.path).sub(File.extname(uri.path), "") unless remote_name
-    commit      = options[:commit]
-    commit      = "master" unless commit
-    commit      = "#{remote_name}/#{commit}"
-    puts "Importing #{repository_url} into #{target} at #{commit}"
+  def import(repository_url, path=nil)
+    uri  = URI.parse(repository_url)
+    path = File.basename(uri.path).sub(File.extname(uri.path), "") unless path
+    name = options[:remote]
+    name = File.basename(uri.path).sub(File.extname(uri.path), "") unless name
 
-    create_remote remote_name, repository_url
-    git :fetch, remote_name
-    git :"read-tree", "--prefix=#{target}/", "-u", commit
-    gipinfo(remote_name => repository_url)
+    remote = Remote.new(name, repository_url, path)
+    commit = options[:commit]
+    commit = "master" unless commit
+    commit = "#{remote.name}/#{commit}"
+    puts "Importing #{remote.url} into #{remote.path} at #{commit}"
+
+    create_remote remote.name, remote.url
+    git :fetch, remote.name
+    git :"read-tree", "--prefix=#{remote.path}/", "-u", commit
+    gipinfo(remote)
     git :add, ".gipinfo"
     git :commit, "-m", "Vendored #{repository_url} at #{commit}", :verbose => true
   end
@@ -36,9 +38,9 @@ Given the remotes described in a .gipinfo, creates or updates Git remotes in thi
 DESC
   method_options :verbose => 0
   def remotify
-    read_gipinfo.each do |remote_name, repository_url|
-      create_remote(remote_name, repository_url)
-      git :fetch, remote_name
+    read_gipinfo.each do |remote|
+      create_remote(remote.name, remote.url)
+      git :fetch, remote.name
     end
   end
 
@@ -50,21 +52,20 @@ DESC
     raise unless e.exitstatus == 128
   end
 
-  def gipinfo(remotes)
+  def gipinfo(remote)
     info = read_gipinfo
-    info.merge!(remotes)
+    info << remote
     write_gipinfo(info)
   end
 
   def read_gipinfo
     if File.file?(".gipinfo")
-      CSV.read(".gipinfo").inject(Hash.new) do |hash, (name,url)|
-        next hash if name =~ /^\s*#/
-        hash[name] = url
-        hash
+      CSV.read(".gipinfo").inject(Array.new) do |memo, (name, url, path)|
+        next memo if name =~ /^\s*#/
+        memo << Remote.new(name, url, path)
       end
     else
-      Hash.new
+      Array.new
     end
   end
 
@@ -74,8 +75,8 @@ DESC
       io << ["# This file maps a series of remote names to repository URLs.  This file is here to ease the work of your team."]
       io << ["# Run 'gip remotify' to generate the appropriate remotes in your repository."]
 
-      remotes.each do |name,url|
-        io << [name, url]
+      remotes.each do |remote|
+        io << remote.to_a
       end
     end
   end
@@ -139,6 +140,18 @@ DESC
 
     def exitstatus
       @status.exitstatus
+    end
+  end
+
+  class Remote
+    attr_accessor :name, :url, :path
+
+    def initialize(name, url, path)
+      @name, @url, @path = name, url, path
+    end
+
+    def to_a
+      [@name, @url, @path]
     end
   end
 end
