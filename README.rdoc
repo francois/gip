@@ -4,6 +4,10 @@ This is an implementation of Tom Dysinger's http://dysinger.net/2008/04/29/repla
 
 Gip is a thin layer above git-read-tree.  If you want more information, you can look at http://assets.en.oreilly.com/1/event/24/Smacking%20Git%20Around%20-%20Advanced%20Git%20Tricks%20Presentation.pdf, pages 254-297.
 
+== Fair Warning
+
+Since Gip copies the upstream repositories directly in your repository, please be advised that your repository will *grow* quickly.  For each remote you add, you will receive all commits from that repository.  That also means the full history for that project.  And when I mean all, I do mean it.  If you vendor Rails, you are forewarned:  you will add nearly 20 MiB to your own repository.  This is a trade-off between Piston (which only imports the latest HEAD) and having subtrees available for easily propagating changes upstream.
+
 == Usage
 
   $ gip import git://github.com/mislav/will_paginate.git vendor/plugins/mislav-will_paginate
