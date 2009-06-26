@@ -2,7 +2,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{gip}
-  s.version = "0.0.0"
+  s.version = "0.1.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Fran\303\247ois Beausoleil"]
@@ -26,6 +26,7 @@ Gem::Specification.new do |s|
      "features/step_definitions/gip_steps.rb",
      "features/support/command_line.rb",
      "features/support/env.rb",
+     "gip.gemspec",
      "lib/gip.rb",
      "test/gip_test.rb",
      "test/test_helper.rb"
