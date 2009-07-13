@@ -24,7 +24,7 @@ DESC
     uri  = begin
              URI.parse(repository_url)
            rescue URI::InvalidURIError
-             URI.parse("git://" + repository_url.split("@", 2).last)
+             URI.parse("git://" + repository_url.split("@", 2).last.split(":", 2).join("/"))
            end
     path = File.basename(uri.path).sub(File.extname(uri.path), "") unless path
     name = options[:remote]
