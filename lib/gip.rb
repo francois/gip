@@ -21,7 +21,11 @@ In all cases, a .gipinfo file will be created/updated with the correct remotes s
 DESC
   method_options :commit => :optional, :remote => :optional, :verbose => 0
   def import(repository_url, path=nil)
-    uri  = URI.parse(repository_url)
+    uri  = begin
+             URI.parse(repository_url)
+           rescue URI::InvalidURIError
+             URI.parse("git://" + repository_url.split("@", 2).last)
+           end
     path = File.basename(uri.path).sub(File.extname(uri.path), "") unless path
     name = options[:remote]
     name = File.basename(uri.path).sub(File.extname(uri.path), "") unless name
