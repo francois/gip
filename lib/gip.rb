@@ -3,7 +3,7 @@ require "uri"
 require "csv"
 
 class Gip < Thor
-  VERSION = "0.2.1"
+  VERSION = "0.2.2"
 
   map %w(--version -v) => :version, %w(--help -h) => :help
 
