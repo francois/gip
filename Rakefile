@@ -10,6 +10,8 @@ begin
     gem.homepage = "http://github.com/francois/gip"
     gem.authors = ["François Beausoleil"]
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
+
+    gem.add_dependency "thor", "~> 0.11"
   end
 
 rescue LoadError
