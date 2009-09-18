@@ -3,11 +3,13 @@ require "uri"
 require "csv"
 
 class Gip < Thor
+  VERSION = "0.2.1"
+
   map %w(--version -v) => :version, %w(--help -h) => :help
 
+  desc "Prints version information"
   def version
-    print "Gip v"
-    puts File.read(File.dirname(__FILE__) + "/../VERSION")
+    puts "Gip v#{VERSION}"
   end
 
   desc  "import REPOSITORY_URL [path]", <<DESC
