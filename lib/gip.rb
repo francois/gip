@@ -21,7 +21,7 @@ If path is absent, the repository's base name will be used.
 
 In all cases, a .gipinfo file will be created/updated with the correct remotes specified.  The .gipinfo file is a CSV file with 2 columns: remote name,repository URL.
 DESC
-  method_options :commit => :optional, :remote => :optional, :verbose => 0
+  method_options :commit => :string, :remote => :string, :verbose => 0
   def import(repository_url, path=nil)
     uri  = begin
              URI.parse(repository_url)
@@ -60,7 +60,7 @@ Given a previously imported tree at PATH, updates it to the latest HEAD, or what
 
 --commit defaults to 'master', and will always be prefixed with the remote's name.
 DESC
-  method_options :verbose => 0, :commit => :optional
+  method_options :verbose => 0, :commit => :string
   def update(path=nil)
     read_gipinfo.each do |remote|
       next unless remote.path == path
