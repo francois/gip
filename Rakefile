@@ -1,3 +1,4 @@
+# coding: utf-8
 require 'rubygems'
 require 'rake'
 
@@ -12,6 +13,9 @@ begin
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
 
     gem.add_dependency "thor", "~> 0.11"
+
+    gem.add_development_dependency "cucumber"
+    gem.add_development_dependency "jeweler"
   end
 
 rescue LoadError
