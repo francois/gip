@@ -12,10 +12,11 @@ begin
     gem.authors = ["François Beausoleil"]
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
 
-    gem.add_dependency "thor", "~> 0.11"
+    gem.add_dependency "thor", "~> 0.11.0"
 
     gem.add_development_dependency "cucumber"
     gem.add_development_dependency "jeweler"
+    gem.add_development_dependency "ruby-debug19"
   end
 
 rescue LoadError
@@ -53,7 +54,7 @@ end
 
 task :default => :test
 
-require 'rake/rdoctask'
+require 'rdoc/task'
 Rake::RDocTask.new do |rdoc|
   if File.exist?('VERSION.yml')
     config = YAML.load(File.read('VERSION.yml'))

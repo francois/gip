@@ -7,7 +7,7 @@ class Gip < Thor
 
   map %w(--version -v) => :version, %w(--help -h) => :help
 
-  desc "Prints version information"
+  desc "Prints version information", ""
   def version
     puts "Gip v#{VERSION}"
   end

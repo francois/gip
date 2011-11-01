@@ -15,16 +15,15 @@ module GipHelpers
   end
 
   def reset_vendors!
+    @vendor_dirs ||= Hash.new
     @vendor_dirs.values.each {|dir| dir.rmtree }
-    @vendor_dirs = Hash.new
+    @vendor_dirs.clear
   end
 
-  def vendor_dirs
-    @vendor_dirs
-  end
+  attr_reader :vendor_dirs
 
   def vendor(basename)
-    Pathname.new(Dir.tmpdir) / "gip" / Process.pid.to_s / basename
+    Pathname.new(Dir.tmpdir) + "gip/#{Process.pid}/#{basename}"
   end
 end
 
